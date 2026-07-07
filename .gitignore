@@ -1,0 +1,21 @@
+# Build artifacts
+.build/
+
+# App bundle and DMG
+zcmdr.app/
+zcmdr-*.dmg
+
+# macOS
+.DS_Store
+*.xcuserdata
+
+# Swift
+Package.resolved
+
+# Dev scripts
+setup.sh
+git-push.sh
+
+# Icon source images
+icon.png
+icon2.png
