@@ -7,7 +7,7 @@ A keyboard-driven dual-panel file manager for macOS. Native, fast, zero external
 - **Dual panels** — browse two directories side by side
 - **Full keyboard control** — F1–F10 for all operations, arrow keys for navigation
 - **File operations** — Copy, Move, Delete, Rename, Mkdir (with overwrite dialog and batch actions)
-- **Built-in file viewer** — text/hex preview of files up to 1 MB (F3)
+- **Built-in file viewer** — text/hex/image preview of files up to 1 MB (Enter or right-click → Preview)
 - **Navigation history** — back/forward per panel, breadcrumb path bar
 - **AI file selection** — ask an LLM (Ollama or OpenAI-compatible) to select files for you. Read-only: the LLM only selects/deselects, never modifies files
 - **4 themes** — Dark, WB 1.2 (Amiga), WB 2.0 (Amiga), Matrix
@@ -48,12 +48,13 @@ This produces `zcmdr-0.1.0.dmg`. Open it and drag `zcmdr.app` to `/Applications`
 
 | Key | Action |
 |-----|--------|
-| F1 | Help placeholder |
+| F1 | Help |
 | F2 | AI file selection |
-| F4 | Edit placeholder |
+| F3 | Go to Folder |
+| F4 | Open in default app |
 | F5 | Copy |
 | F6 | Move |
 | F7 | Mkdir |
 | F8 | Delete |
-| F9 | Run terminal |
+| F9 | Rename |
 | F10 | Quit |

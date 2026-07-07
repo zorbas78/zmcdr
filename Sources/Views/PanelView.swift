@@ -25,41 +25,25 @@ struct PanelView: View {
             filterBar
                 .fixedSize(horizontal: false, vertical: true)
 
-            ScrollViewReader { proxy in
-                ScrollView {
-                    LazyVStack(spacing: 0) {
-                        let files = panelVM.filteredFiles
-                        if files.isEmpty {
-                            emptyState
-                        } else {
-                            ForEach(Array(files.enumerated()), id: \.element.id) { idx, file in
-                                FileRowView(
-                                    file: file,
-                                    isCursor: idx == panelVM.cursorIndex,
-                                    isSelected: panelVM.selectedURLs.contains(file.url),
-                                    panel: panel,
-                                    index: idx
-                                )
-                                .id(file.id)
-                            }
+            ScrollView {
+                LazyVStack(spacing: 0) {
+                    let files = panelVM.filteredFiles
+                    if files.isEmpty {
+                        emptyState
+                    } else {
+                        ForEach(Array(files.enumerated()), id: \.element.id) { idx, file in
+                            FileRowView(
+                                file: file,
+                                isCursor: idx == panelVM.cursorIndex,
+                                isSelected: panelVM.selectedURLs.contains(file.url),
+                                panel: panel,
+                                index: idx
+                            )
+                            .id(file.id)
                         }
                     }
-                    .frame(maxWidth: .infinity)
                 }
-                .onChange(of: panelVM.cursorIndex) { _, newIdx in
-                    guard newIdx < panelVM.filteredFiles.count else { return }
-                    withAnimation(.none) {
-                        proxy.scrollTo(panelVM.filteredFiles[newIdx].id, anchor: .center)
-                    }
-                }
-                .onChange(of: isActive) { _, active in
-                    guard active else { return }
-                    let idx = panelVM.cursorIndex
-                    guard idx < panelVM.filteredFiles.count else { return }
-                    withAnimation(.none) {
-                        proxy.scrollTo(panelVM.filteredFiles[idx].id, anchor: .center)
-                    }
-                }
+                .frame(maxWidth: .infinity)
             }
             .frame(maxHeight: .infinity)
 

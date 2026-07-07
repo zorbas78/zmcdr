@@ -51,6 +51,11 @@ struct FileRowView: View {
                     appVM.extractArchive(file: file.url)
                 }
             }
+            if FileService.imageExtensions.contains(file.extension.lowercased()) {
+                Button("Preview") {
+                    appVM.loadFilePreview(for: file.url)
+                }
+            }
         }
         .onDrag {
             NSItemProvider(object: file.url as NSURL)
