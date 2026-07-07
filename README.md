@@ -51,7 +51,7 @@ This produces `zcmdr-0.1.0.dmg`. Open it and drag `zcmdr.app` to `/Applications`
 | F1 | Help |
 | F2 | AI file selection |
 | F3 | Go to Folder |
-| F4 | Open in default app |
+| F4 | Edit |
 | F5 | Copy |
 | F6 | Move |
 | F7 | Mkdir |

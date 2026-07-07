@@ -55,6 +55,17 @@ struct FileRowView: View {
                 Button("Preview") {
                     appVM.loadFilePreview(for: file.url)
                 }
+                Button("Copy") {
+                    let pb = NSPasteboard.general
+                    pb.clearContents()
+                    pb.writeObjects([file.url as NSURL])
+                }
+                Button("Share") {
+                    let picker = NSSharingServicePicker(items: [file.url])
+                    if let window = NSApp.keyWindow, let view = window.contentView {
+                        picker.show(relativeTo: .zero, of: view, preferredEdge: .minY)
+                    }
+                }
             }
         }
         .onDrag {

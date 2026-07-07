@@ -17,6 +17,10 @@ struct FilePreviewView: View {
                     }
                 }
                 Spacer()
+                if appVM.filePreview?.image != nil {
+                    Button("Copy") { appVM.copyPreviewToClipboard() }
+                    Button("Share") { appVM.sharePreview() }
+                }
                 Button("Close") {
                     appVM.showFilePreview = false
                 }

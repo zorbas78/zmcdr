@@ -52,6 +52,7 @@ final class AppViewModel {
     var showAIPrompt = false
     var showFilePreview = false
     var filePreview: FilePreviewContent?
+    var previewURL: URL?
 
     var overwriteInfo: OverwriteInfo?
     var overwriteApproved: Set<URL> = []
@@ -698,6 +699,7 @@ final class AppViewModel {
     }
 
     func loadFilePreview(for url: URL) {
+        previewURL = url
         Task.detached(priority: .userInitiated) { [weak self] in
             let filename = url.lastPathComponent
             let ext = url.pathExtension.lowercased()
@@ -739,6 +741,23 @@ final class AppViewModel {
                 self?.filePreview = result
                 self?.showFilePreview = true
             }
+        }
+    }
+
+    func copyPreviewToClipboard() {
+        guard let url = previewURL else { return }
+        let pb = NSPasteboard.general
+        pb.clearContents()
+        if let image = NSImage(contentsOf: url) {
+            pb.writeObjects([image])
+        }
+    }
+
+    func sharePreview() {
+        guard let url = previewURL else { return }
+        let picker = NSSharingServicePicker(items: [url])
+        if let window = NSApp.keyWindow, let view = window.contentView {
+            picker.show(relativeTo: .zero, of: view, preferredEdge: .minY)
         }
     }
 

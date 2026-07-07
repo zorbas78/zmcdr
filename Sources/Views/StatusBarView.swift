@@ -9,6 +9,8 @@ struct StatusBarView: View {
             helpSeparator
             helpButton("F2", "AI") { appVM.showAIPrompt = true }
             helpSeparator
+            helpButton("F3", "Goto") { appVM.beginGoto() }
+            helpSeparator
             helpButton("F4", "Edit") { appVM.editFile() }
             helpSeparator
             helpButton("F5", "Copy") { appVM.beginCopy() }
