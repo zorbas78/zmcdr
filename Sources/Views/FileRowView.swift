@@ -1,5 +1,35 @@
 import SwiftUI
 
+// MARK: - Right-click cursor setter
+
+struct RightClickCursorSetter: NSViewRepresentable {
+    let onRightClick: () -> Void
+
+    func makeNSView(context: Context) -> NSView {
+        RightClickView(onRightClick: onRightClick)
+    }
+
+    func updateNSView(_ nsView: NSView, context: Context) {}
+}
+
+class RightClickView: NSView {
+    let onRightClick: () -> Void
+
+    init(onRightClick: @escaping () -> Void) {
+        self.onRightClick = onRightClick
+        super.init(frame: .zero)
+    }
+
+    required init?(coder: NSCoder) { nil }
+
+    override func rightMouseDown(with event: NSEvent) {
+        onRightClick()
+        super.rightMouseDown(with: event)
+    }
+}
+
+// MARK: - FileRowView
+
 struct FileRowView: View {
     let file: FileItem
     let isCursor: Bool
@@ -28,6 +58,13 @@ struct FileRowView: View {
         .padding(.vertical, 1)
         .background(backgroundColor)
         .contentShape(Rectangle())
+        .background(
+            RightClickCursorSetter {
+                appVM.activePanel = panel
+                panelVM.cursorIndex = index
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        )
         .overlay {
             if isCursor && appVM.activePanel == panel {
                 Rectangle()
