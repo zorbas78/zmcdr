@@ -58,3 +58,9 @@ This produces `zcmdr-0.1.0.dmg`. Open it and drag `zcmdr.app` to `/Applications`
 | F8 | Delete |
 | F9 | Rename |
 | F10 | Quit |
+
+
+<img width="1493" height="850" alt="image" src="https://github.com/user-attachments/assets/9ac2cea5-1c35-42ee-98fb-55b9e584a5b1" />
+
+<img width="1024" height="1024" alt="image" src="https://github.com/user-attachments/assets/0b0d24b4-a65d-4234-a402-e62e1a96d211" />
+
