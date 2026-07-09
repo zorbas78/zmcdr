@@ -1,30 +1,28 @@
 import SwiftUI
 
-// MARK: - Right-click cursor setter
+// MARK: - Right-click cursor setter via NSView tagging
 
-struct RightClickCursorSetter: NSViewRepresentable {
-    let onRightClick: () -> Void
-
-    func makeNSView(context: Context) -> NSView {
-        RightClickView(onRightClick: onRightClick)
-    }
-
-    func updateNSView(_ nsView: NSView, context: Context) {}
+class PanelRowView: NSView {
+    var panelIndex: Int = 0
+    var panelPosition: PanelPosition = .left
 }
 
-class RightClickView: NSView {
-    let onRightClick: () -> Void
+struct RightClickCursorSetter: NSViewRepresentable {
+    let panel: PanelPosition
+    let index: Int
 
-    init(onRightClick: @escaping () -> Void) {
-        self.onRightClick = onRightClick
-        super.init(frame: .zero)
+    func makeNSView(context: Context) -> NSView {
+        let view = PanelRowView()
+        view.panelIndex = index
+        view.panelPosition = panel
+        return view
     }
 
-    required init?(coder: NSCoder) { nil }
-
-    override func rightMouseDown(with event: NSEvent) {
-        onRightClick()
-        super.rightMouseDown(with: event)
+    func updateNSView(_ nsView: NSView, context: Context) {
+        if let row = nsView as? PanelRowView {
+            row.panelIndex = index
+            row.panelPosition = panel
+        }
     }
 }
 
@@ -59,11 +57,8 @@ struct FileRowView: View {
         .background(backgroundColor)
         .contentShape(Rectangle())
         .background(
-            RightClickCursorSetter {
-                appVM.activePanel = panel
-                panelVM.cursorIndex = index
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            RightClickCursorSetter(panel: panel, index: index)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         )
         .overlay {
             if isCursor && appVM.activePanel == panel {
