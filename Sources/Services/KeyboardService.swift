@@ -3,6 +3,7 @@ import AppKit
 
 final class KeyboardService {
     private var monitor: Any?
+    private var rightClickMonitor: Any?
     private weak var appVM: AppViewModel?
 
     func startMonitoring(appVM: AppViewModel) {
@@ -17,11 +18,25 @@ final class KeyboardService {
             }
             return handled ? nil : event
         }
+
+        rightClickMonitor = NSEvent.addLocalMonitorForEvents(matching: .rightMouseDown) { [weak self] event in
+            guard let self, let vm = self.appVM else { return event }
+            if let window = event.window, let cv = window.contentView {
+                let point = cv.convert(event.locationInWindow, from: nil)
+                let midX = cv.bounds.width / 2
+                MainActor.assumeIsolated {
+                    vm.activePanel = point.x < midX ? .left : .right
+                }
+            }
+            return event
+        }
     }
 
     func stopMonitoring() {
         if let monitor { NSEvent.removeMonitor(monitor) }
+        if let rightClickMonitor { NSEvent.removeMonitor(rightClickMonitor) }
         monitor = nil
+        rightClickMonitor = nil
     }
 }
 
