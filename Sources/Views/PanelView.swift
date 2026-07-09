@@ -58,6 +58,9 @@ struct PanelView: View {
                 .fixedSize(horizontal: false, vertical: true)
         }
         .background(appVM.themeColors.panelBackground)
+        .onTapGesture {
+            appVM.activePanel = panel
+        }
         .overlay(
             Rectangle()
                 .fill(isActive ? appVM.themeColors.directoryForeground.opacity(0.5) : .clear)
