@@ -52,19 +52,27 @@ struct FileRowView: View {
                 }
             }
             if FileService.imageExtensions.contains(file.extension.lowercased()) {
+                Divider()
                 Button("Preview") {
                     appVM.loadFilePreview(for: file.url)
-                }
-                Button("Copy") {
-                    let pb = NSPasteboard.general
-                    pb.clearContents()
-                    pb.writeObjects([file.url as NSURL])
                 }
                 Button("Share") {
                     let picker = NSSharingServicePicker(items: [file.url])
                     if let window = NSApp.keyWindow, let view = window.contentView {
                         picker.show(relativeTo: .zero, of: view, preferredEdge: .minY)
                     }
+                }
+            }
+            Divider()
+            Button("Copy") {
+                appVM.copyFileToClipboard(url: file.url)
+            }
+            Button("Cut") {
+                appVM.cutFileToClipboard(url: file.url)
+            }
+            if appVM.hasClipboardContent {
+                Button("Paste") {
+                    appVM.pasteFromClipboard()
                 }
             }
         }

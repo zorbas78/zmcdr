@@ -92,7 +92,7 @@ struct ContentView: View {
                             .aspectRatio(contentMode: .fit)
                             .frame(width: 512, height: 512)
                     }
-                    Text("Coded with <3 and AI by zorbas78")
+                    Text("Made with <3 and AI by zorbas78")
                         .font(.system(size: 13))
                         .foregroundColor(Color(red: 0.4, green: 0.4, blue: 0.4))
                 }

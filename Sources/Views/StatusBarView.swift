@@ -26,7 +26,7 @@ struct StatusBarView: View {
             helpButton("F10", "Quit") { NSApplication.shared.terminate(nil) }
 
             helpSeparator
-            Text("Coded with <3 and AI by zorbas78")
+            Text("Made with <3 and AI by zorbas78")
                 .font(.system(size: 9))
                 .foregroundColor(appVM.themeColors.dimText)
                 .padding(.horizontal, 4)

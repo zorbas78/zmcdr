@@ -761,6 +761,63 @@ final class AppViewModel {
         }
     }
 
+    private let cutPasteboardType = NSPasteboard.PasteboardType("zcmdr.cut")
+
+    func copyFileToClipboard(url: URL) {
+        let pb = NSPasteboard.general
+        pb.clearContents()
+        pb.writeObjects([url as NSURL])
+        pb.setString("NO", forType: cutPasteboardType)
+    }
+
+    func cutFileToClipboard(url: URL) {
+        let pb = NSPasteboard.general
+        pb.clearContents()
+        pb.writeObjects([url as NSURL])
+        pb.setString("YES", forType: cutPasteboardType)
+    }
+
+    var hasClipboardContent: Bool {
+        let pb = NSPasteboard.general
+        if pb.availableType(from: [.fileURL]) != nil { return true }
+        if pb.availableType(from: [.tiff, .png]) != nil { return true }
+        if pb.availableType(from: [.string]) != nil { return true }
+        return false
+    }
+
+    func pasteFromClipboard() {
+        let pb = NSPasteboard.general
+        let dest = activePanelViewModel.currentDirectory
+
+        if let items = pb.pasteboardItems {
+            let urls = items.compactMap { $0.string(forType: .fileURL).flatMap { URL(string: $0) } }
+            if !urls.isEmpty {
+                let isCut = items.first?.string(forType: cutPasteboardType) == "YES"
+                currentOperation = isCut
+                    ? .move(sources: urls, destination: dest)
+                    : .copy(sources: urls, destination: dest)
+                return
+            }
+        }
+
+        if let image = pb.readObjects(forClasses: [NSImage.self], options: nil)?.first as? NSImage {
+            let fileURL = dest.appendingPathComponent("clipboard.png")
+            if let tiffData = image.tiffRepresentation,
+               let bitmap = NSBitmapImageRep(data: tiffData),
+               let pngData = bitmap.representation(using: .png, properties: [:]) {
+                try? pngData.write(to: fileURL)
+                Task { await activePanelViewModel.loadFiles() }
+            }
+            return
+        }
+
+        if let text = pb.string(forType: .string) {
+            let fileURL = dest.appendingPathComponent("clipboard.txt")
+            try? text.write(to: fileURL, atomically: true, encoding: .utf8)
+            Task { await activePanelViewModel.loadFiles() }
+        }
+    }
+
     struct FilePreviewContent {
         let title: String
         let text: String
