@@ -44,11 +44,11 @@ struct PanelView: View {
                     }
                 }
                 .frame(maxWidth: .infinity)
-                .contextMenu {
-                    if appVM.hasClipboardContent {
-                        Button("Paste") {
-                            appVM.pasteFromClipboard()
-                        }
+            }
+            .contextMenu {
+                if appVM.hasClipboardContent {
+                    Button("Paste") {
+                        appVM.pasteFromClipboard()
                     }
                 }
             }

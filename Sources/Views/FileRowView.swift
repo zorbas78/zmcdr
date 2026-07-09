@@ -1,28 +1,36 @@
 import SwiftUI
 
-// MARK: - Right-click cursor setter via NSView tagging
+// MARK: - Right-click interceptor (overlay, forwards event after setting cursor)
 
-class PanelRowView: NSView {
-    var panelIndex: Int = 0
-    var panelPosition: PanelPosition = .left
+class RightClickInterceptorView: NSView {
+    var action: (() -> Void)?
+
+    override func rightMouseDown(with event: NSEvent) {
+        action?()
+        super.rightMouseDown(with: event)
+    }
 }
 
-struct RightClickCursorSetter: NSViewRepresentable {
-    let panel: PanelPosition
-    let index: Int
+struct RightClickInterceptor: NSViewRepresentable {
+    let action: @MainActor @Sendable () -> Void
 
     func makeNSView(context: Context) -> NSView {
-        let view = PanelRowView()
-        view.panelIndex = index
-        view.panelPosition = panel
+        let view = RightClickInterceptorView()
+        view.action = { MainActor.assumeIsolated { context.coordinator.callback() } }
         return view
     }
 
     func updateNSView(_ nsView: NSView, context: Context) {
-        if let row = nsView as? PanelRowView {
-            row.panelIndex = index
-            row.panelPosition = panel
-        }
+        (nsView as? RightClickInterceptorView)?.action = { MainActor.assumeIsolated { context.coordinator.callback() } }
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(action: action)
+    }
+
+    class Coordinator {
+        let callback: @MainActor @Sendable () -> Void
+        init(action: @escaping @MainActor @Sendable () -> Void) { self.callback = action }
     }
 }
 
@@ -56,9 +64,13 @@ struct FileRowView: View {
         .padding(.vertical, 1)
         .background(backgroundColor)
         .contentShape(Rectangle())
-        .background(
-            RightClickCursorSetter(panel: panel, index: index)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .overlay(
+            RightClickInterceptor(action: { [weak _appVM = appVM, panel, index] in
+                _appVM?.activePanel = panel
+                if panel == .left { _appVM?.leftPanel.cursorIndex = index }
+                else { _appVM?.rightPanel.cursorIndex = index }
+            })
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         )
         .overlay {
             if isCursor && appVM.activePanel == panel {
@@ -112,6 +124,10 @@ struct FileRowView: View {
                         appVM.pasteFromClipboard()
                     }
                 }
+            }
+            Divider()
+            Button("Delete") {
+                appVM.currentOperation = .delete(sources: [file.url])
             }
         }
         .onDrag {
