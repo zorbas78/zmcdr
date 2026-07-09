@@ -785,9 +785,9 @@ final class AppViewModel {
         return false
     }
 
-    func pasteFromClipboard() {
+    func pasteFromClipboard(to targetDir: URL? = nil) {
         let pb = NSPasteboard.general
-        let dest = activePanelViewModel.currentDirectory
+        let dest = targetDir ?? activePanelViewModel.currentDirectory
 
         if let items = pb.pasteboardItems {
             let urls = items.compactMap { $0.string(forType: .fileURL).flatMap { URL(string: $0) } }

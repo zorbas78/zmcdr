@@ -71,8 +71,14 @@ struct FileRowView: View {
                 appVM.cutFileToClipboard(url: file.url)
             }
             if appVM.hasClipboardContent {
-                Button("Paste") {
-                    appVM.pasteFromClipboard()
+                if file.isDirectory && file.name != ".." {
+                    Button("Paste into Folder") {
+                        appVM.pasteFromClipboard(to: file.url)
+                    }
+                } else {
+                    Button("Paste") {
+                        appVM.pasteFromClipboard()
+                    }
                 }
             }
         }

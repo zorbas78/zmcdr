@@ -44,6 +44,13 @@ struct PanelView: View {
                     }
                 }
                 .frame(maxWidth: .infinity)
+                .contextMenu {
+                    if appVM.hasClipboardContent {
+                        Button("Paste") {
+                            appVM.pasteFromClipboard()
+                        }
+                    }
+                }
             }
             .frame(maxHeight: .infinity)
 
