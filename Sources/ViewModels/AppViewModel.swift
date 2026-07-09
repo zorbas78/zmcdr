@@ -386,6 +386,18 @@ final class AppViewModel {
         overwritePendingOperation = nil
     }
 
+    private func runSilentOperation(_ op: FileOperation) {
+        Task {
+            do {
+                try await executeOperation(op)
+                await activePanelViewModel.loadFiles()
+                await inactivePanelViewModel.loadFiles()
+            } catch {
+                errorMessage = error.localizedDescription
+            }
+        }
+    }
+
     private func overwriteAction(for index: Int) -> OverwriteMode {
         switch index {
         case 0: return .yes
@@ -677,7 +689,11 @@ final class AppViewModel {
     }
 
     func copyDroppedItems(_ urls: [URL], to dest: URL) {
-        currentOperation = .copy(sources: urls, destination: dest)
+        if urls.count == 1 {
+            runSilentOperation(.copy(sources: urls, destination: dest))
+        } else {
+            currentOperation = .copy(sources: urls, destination: dest)
+        }
     }
 
     func quickView() {
@@ -793,9 +809,14 @@ final class AppViewModel {
             let urls = items.compactMap { $0.string(forType: .fileURL).flatMap { URL(string: $0) } }
             if !urls.isEmpty {
                 let isCut = items.first?.string(forType: cutPasteboardType) == "YES"
-                currentOperation = isCut
+                let op: FileOperation = isCut
                     ? .move(sources: urls, destination: dest)
                     : .copy(sources: urls, destination: dest)
+                if urls.count == 1 {
+                    runSilentOperation(op)
+                } else {
+                    currentOperation = op
+                }
                 return
             }
         }
